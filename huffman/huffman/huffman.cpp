@@ -50,9 +50,10 @@ huffman::huffman(node** t,char* txt)
 			root[i] = t[i];
 			listsize++;
 		}
+		//t++;
 	}
 	maketree();
-	first = root[0];
+	//first = root[0];
 	for (int i = 0; txt[i] != '\0'; i++)
 	{
 		steps = 0;
@@ -62,13 +63,14 @@ huffman::huffman(node** t,char* txt)
 
 void huffman::pop(node* t)
 {
+	int n = -1;
 	if (listsize == -1)
 	{
 		cout << "the pop is error" << endl;
 	}
 	else
 	{
-		int n;
+		
 		for (int i = 0; i <= listsize; i++)
 		{
 			if (root[i] == t)
@@ -77,9 +79,9 @@ void huffman::pop(node* t)
 				break;
 			}
 		}
-		for (int i = n; i <= listsize; i++)
+		for (int s = n; s < listsize; s++)
 		{
-			root[i] = root[i + 1];
+			root[s] = root[s + 1];
 		}
 		listsize--;
 	}
@@ -109,13 +111,17 @@ node* huffman::select()
 {
 	int t = root[0]->frequency;
 	node* r = new node;
+	r = root[0];
 	//int j;
 	for (int i = 1; i <= listsize; i++)
 		{
-			if (root[i]->frequency < t)
+			
+			node* q = root[i];
+			int p = q->frequency;
+			if (p < t)
 			{
-				t = root[i]->frequency;
-				r = root[i];
+				t = p;
+				r = q;
 			}
 		}
 	return r;
@@ -126,17 +132,20 @@ void huffman::maketree()
 	while (listsize != 0)
 	{
 		node* t1 = new node;
+		node* s1 = select();
 		t1 = select();
-		pop(select());
+		pop(s1);
 		node* t2 = new node;
+		node* s2 = select();
 		t2 = select();
-		pop(select());
+		pop(s2);
 		node* merge = new node;
 		merge->frequency = t1->frequency + t2->frequency;
 		merge->tag = 1;
 		merge->leftchild = t1;
 		merge->rightchild = t2;
 		push(merge);
+		first = merge;
 	}
 }
 
@@ -176,37 +185,80 @@ node** statistic(char* a)
 	node** b = new node*[300];
 	for (int i = 0; i < 300; i++)
 	{
+		b[i] = new node;
+	}
+	for (int i = 0; i < 300; i++)
+	{
 		b[i]->frequency = 0;
 		b[i]->leftchild = b[i]->rightchild = NULL;
 		b[i]->tag = 0;
 		b[i]->element = '0';
 	}
-	for (int i = 0; a[i]!='\0'; i++)
+	b[0]->element = a[0];
+	b[0]->frequency = 1;
+	b[0]->tag = 1;
+	int bsize = 1;
+	int isize = 1;
+	while (1)
 	{
-		for (int j = 0; j < 300; j++)
-
+		bool exist = 0;
+		if (a[isize] == '\0')
 		{
-			if (b[j]->element == a[i])
+			break;
+		}
+		for (int j = 0; j < bsize; j++)
+		{
+			if (b[j]->element == a[isize])
 			{
 				b[j]->frequency++;
+				isize++;
+				exist = 1;
 				break;
 			}
-			else
-
+			if (exist == 0)
 			{
-				for (int t = 0; t < 300; t++)
-				{
-					if (b[j]->tag == 0)
-					{
-						b[j]->element = a[i];
-						b[j]->tag = 1;
-						b[j]->frequency++;
-						break;
-					}
-				}
+				b[bsize]->element = a[isize];
+				b[bsize]->frequency++;
+				b[bsize]->tag = 1;
+				bsize++;
+				isize++;
 			}
 		}
 	}
+	//for (int i = 0; a[i]!='\0'; i++)
+	//{
+	//	int sign = 0;
+	//	for (int j = 0; j < 300 && sign == 0; j++)
+	//	{
+	//		if (b[j]->element == a[i])
+	//		{
+	//			b[j]->frequency++;
+	//			sign = 1;
+	//		}
+	//	}
+
+	//		else if(b[j])
+
+	//		{
+	//			for (int t = j+1; t < 300; t++)
+	//			{
+	//				if (b[t]->tag == 0)
+	//				{
+	//					b[t]->element = a[i];
+	//					b[t]->tag = 1;
+	//					b[t]->frequency++;
+	//					break;
+	//				}
+	//				else
+	//				{
+	//					cout << "error!" << endl;
+	//				}
+	//			}
+	//			//break;
+	//		}
+	//		break;
+	//	
+	//}
 	return b;
 }
 
