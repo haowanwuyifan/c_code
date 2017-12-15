@@ -17,28 +17,26 @@ public:
 	maxheap(char* a, int size);//构造函数
 	void insert(char a);//插入函数
 	void erase();//删除函数
-				 //void level(node* t);//函数
 	void output();//输出函数
-	void sort();//函数
+	void sort();//排序函数
 	void middle(node* t);
 	void push(node* t);//入队列
 	void pop();//出队列
 	bool empty();//判断队列是否为空
 	node* getroot();//返回根节点
-	void restruct();
-	node* getqueue();
-	void initialize();
-	node* gettag(int n);
-	void level(node* t);
+	void restruct();//刷新队列
+	node* getqueue();//返回队列中对应的元素
+	void initialize();//大根堆初始化
+	node* gettag(int n);//返回对应位置的节点
+	void level(node* t);//层次遍历
 	//void restruct_que();
 
 private:
 	node * root;//根节点
 	node** queue;//层次遍历赋值用到的队列
 	int listsize;//树的长度
-	int que_size;
-	int heapsize;
-
+	int heapsize;//堆的大小
+	char sequence[10];
 };
 
 maxheap::maxheap(char* a, int size)//初始化，定义节点为空
@@ -48,11 +46,11 @@ maxheap::maxheap(char* a, int size)//初始化，定义节点为空
 	queue = new node*[200];
 	root = new node;
 	node* current = root;
-	int i = 0;
-	push(current);
+	int i = 1;
+	push(current);//层次遍历的思想创建堆，并对节点赋空值
 	while (1)
 	{
-		if (i < size - 1)
+		if (i < size )
 		{
 			current->leftchild = new node;
 			current->leftchild->leftchild = NULL;
@@ -79,15 +77,18 @@ maxheap::maxheap(char* a, int size)//初始化，定义节点为空
 		pop();
 		current = getqueue();
 	}
-	restruct();
+	restruct();//刷新队列
 	i = 0;
 	current = root;
-	push(current);
+	push(current);//层次遍历的思想对堆进行赋值
 	while (empty())
 	{
-		current->element = a[i];
-		i++;
-		current->tag = i;
+		if (i < size)
+		{
+			current->element = a[i];
+			i++;
+			current->tag = i;
+		}
 		if (current->leftchild != NULL)
 		{
 			push(current->leftchild);
@@ -102,7 +103,7 @@ maxheap::maxheap(char* a, int size)//初始化，定义节点为空
 	heapsize = i;
 }
 
-void maxheap::restruct()
+void maxheap::restruct()//刷新队列
 {
 	listsize = -1;
 	/*queue = new node*[200];
@@ -120,7 +121,7 @@ delete queue[i];
 }
 }*/
 
-bool maxheap::empty()
+bool maxheap::empty()//判断是否为空
 {
 	if (listsize == -1)
 	{
@@ -132,7 +133,7 @@ bool maxheap::empty()
 	}
 }
 
-void maxheap::push(node* t)
+void maxheap::push(node* t)//入队列
 {
 	if (listsize == -1)
 	{
@@ -150,7 +151,7 @@ void maxheap::push(node* t)
 	}
 }
 
-void maxheap::pop()
+void maxheap::pop()//出队列
 {
 	if (listsize == -1)
 	{
@@ -162,12 +163,12 @@ void maxheap::pop()
 	}
 }
 
-node* maxheap::getqueue()
+node* maxheap::getqueue()//返回队列元素
 {
 	return queue[listsize];
 }
 
-void maxheap::output()
+void maxheap::output()//队列大小
 {
 	cout << heapsize << endl;
 	//cout << level(2)->element << endl;
@@ -180,17 +181,17 @@ void maxheap::middle(node *t)//中序遍历，输出节点的元素
 	{
 		middle(t->leftchild);
 		//char vis = visit();
-		cout << t->element << " " << t->tag << " ";
+		cout << t->element  << " ";
 		middle(t->rightchild);
 	}
 }
 
-node* maxheap::getroot()
+node* maxheap::getroot()//返回根节点
 {
 	return root;
 }
 
-void maxheap::initialize()
+void maxheap::initialize()//堆初始化，从最后一个节点开始，判断它和它父树元素的大小，如果大于父树元素，将子树上移
 {
 	int i;
 	for (int i = heapsize; i > 0; i--)
@@ -212,7 +213,7 @@ void maxheap::initialize()
 	}
 }
 
-node* ::maxheap::gettag(int n)
+node* ::maxheap::gettag(int n)//遍历返回特定的节点
 {
 	node* t = root;
 	push(t);
@@ -240,7 +241,7 @@ node* ::maxheap::gettag(int n)
 	}
 }
 
-void maxheap::insert(char a)
+void maxheap::insert(char a)//插入函数
 {
 	heapsize++;
 	node* put = new node;
@@ -248,7 +249,7 @@ void maxheap::insert(char a)
 	put->tag = heapsize;
 	put->leftchild = put->rightchild = NULL;
 	int n = put->tag;
-	node* parent = gettag(n / 2);
+	node* parent = gettag(n / 2);//判断应该插入左子树还是右子树
 	switch (n % 2)
 	{
 	case 0:
@@ -284,12 +285,12 @@ void maxheap::level(node* t)//层次遍历，按次序进入队列，同时按顺序输出
 
 }
 
-void maxheap::erase()
+void maxheap::erase()//删除操作
 {
 	node* current = gettag(heapsize);
 	root->element = current->element;
 	int n = heapsize;
-	node* parent2 = gettag(n / 2);
+	node* parent2 = gettag(n / 2);//将最后一个节点删除，然后插入到根节点
 	switch (n % 2)
 	{
 	case 0:
@@ -303,28 +304,31 @@ void maxheap::erase()
 	}
 	delete current;
 	heapsize--;
-	initialize();
+	initialize();//初始化堆
 }
 
-void maxheap::sort()
+void maxheap::sort()//堆排序
 {
 	for (int i = 0; i < heapsize; i++)
 	{
+		node* temp = gettag(heapsize);
 		erase();
+		sequence[i] = temp->element;
 	}
 	delete root;
+	cout << sequence;
 }
 
 
 
 int main()
 {
-	char* a = new char[200];
+	char* a = new char[100];
 	cin >> a;
 	cout << "the input order is:";
 	cout << a;
 	cout << endl;
-	maxheap ma(a, 3);
+	maxheap ma(a,4);
 	cout << "the sequence is:";
 	ma.middle(ma.getroot());
 	cout << endl;
