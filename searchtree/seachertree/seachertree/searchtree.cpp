@@ -18,7 +18,7 @@ public:
 	void buildtree(int* a);
 	void insert(int);
 	void erase(int);
-	node* getfirst();
+	void getfirst(int);
 	node* getsecond();
 	node* getindex();
 	void middleorder(node* t);
@@ -121,6 +121,8 @@ void searchtree::insert(int key)
 	tsize++;
 }
 
+
+
 //void searchtree::erase(int key)
 //{
 //	node* current = root;
@@ -134,7 +136,31 @@ void searchtree::insert(int key)
 //	}
 //}
 
-
+void searchtree::getfirst(int key)
+{
+	node* current = root;
+	while (1)
+	{
+		if (current->element.first == key)
+		{
+			cout << current->element.second;
+			break;
+		}
+		if (current->leftchild == NULL && current->rightchild == NULL)
+		{
+			cout << "there is no key existed";
+			break;
+		}
+		if (key < current->element.first&&current->leftchild != NULL)
+		{
+			current = current->leftchild;
+		}
+		if (key > current->element.first&&current->rightchild != NULL)
+		{
+			current = current->rightchild;
+		}
+	}
+}
 
 
 
@@ -167,12 +193,15 @@ int main()
 	searchtree st(n);
 	st.buildtree(a);
 	st.middleorder(st.getroot());
-	int ins;
+	/*int ins;
 	cout << "if insert " ;
 	cin >> ins;
 	cout << "then ";
 	st.insert(ins);
-	st.middleorder(st.getroot());
+	st.middleorder(st.getroot());*/
+	cout << endl;
+	st.getfirst(4);
+	//st.middleorder(st.getroot());
 	system("pause");
 	return 0;
 }
