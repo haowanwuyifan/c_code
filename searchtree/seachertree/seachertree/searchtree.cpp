@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct node
+struct node//创建节点
 {
 	pair<int, char>  element;
 	node* leftchild;
@@ -17,29 +17,29 @@ public:
 	searchtree(int size);
 	void buildtree(int* a);
 	void insert(int);
-	void erase(int);
+	//void erase(int);
 	void getfirst(int);
-	node* getsecond();
-	node* getindex();
+	//node* getsecond();
+	//node* getindex();
 	void middleorder(node* t);
 	node* getroot();
 protected:
 	node * root;
-	int height;
-	int listsize;
+	//int height;
+	//int listsize;
 	int tsize;
 
 };
 
-searchtree::searchtree(int size)
+searchtree::searchtree(int size)//构造函数，初始化根节点
 {
 	root = NULL;
-	height = 0;
-	listsize = 0;
+	//height = 0;
+	//listsize = 0;
 	tsize = size;
 }
 
-void searchtree::buildtree(int* a)
+void searchtree::buildtree(int* a)//构造搜索树
 {
 	root = new node;
 	root->element.first = a[0];
@@ -48,7 +48,7 @@ void searchtree::buildtree(int* a)
 	for (int i = 1; i < tsize; i++)
 	{
 		node* current = root;
-		while (1)
+		while (1)//如果输入的关键字小于当前节点的关键字，进入左子树，若没有左子树，建立左子树节点，右边同理
 		{
 			if (a[i] < current->element.first&&current->leftchild != NULL)
 			{
@@ -136,10 +136,10 @@ void searchtree::insert(int key)
 //	}
 //}
 
-void searchtree::getfirst(int key)
+void searchtree::getfirst(int key)//搜索关键字
 {
 	node* current = root;
-	while (1)
+	while (1)//若存在与输入值相等的关键字，输出对应的字符，若输入的值比当前节点的关键字小，进入左子树，否则进入右子树
 	{
 		if (current->element.first == key)
 		{
@@ -164,7 +164,7 @@ void searchtree::getfirst(int key)
 
 
 
-void searchtree::middleorder(node* t)
+void searchtree::middleorder(node* t)//中序遍历输出搜索树
 {
 	if (t)
 	{
