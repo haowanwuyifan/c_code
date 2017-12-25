@@ -24,7 +24,8 @@ void CreateBiTree(tree & t, string front, string mid)	//t是根节点，fro为前序，mi
 	string left_fro = front.substr(1, left_length);//左子树的前序序列
 	string right_fro = front.substr(1 + left_length);//右子树的前序序列
 
-	t = (tree)malloc(sizeof(bnode));
+	t=new bnode[sizeof(bnode)];
+
 	if (t != NULL)
 	{
 		t->data = current;

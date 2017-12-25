@@ -18,7 +18,7 @@ public:
 	void insert(char a);//插入函数
 	void erase();//删除函数
 	void output();//输出函数
-	void sort();//排序函数
+	//void sort();//排序函数
 	void middle(node* t);
 	void push(node* t);//入队列
 	void pop();//出队列
@@ -307,7 +307,7 @@ void maxheap::erase()//删除操作
 	initialize();//初始化堆
 }
 
-void maxheap::sort()//堆排序
+/*void maxheap::sort()//堆排序
 {
 	for (int i = 0; i < heapsize; i++)
 	{
@@ -317,7 +317,7 @@ void maxheap::sort()//堆排序
 	}
 	delete root;
 	cout << sequence;
-}
+}*/
 
 
 
@@ -335,16 +335,19 @@ int main()
 	ma.output();
 	cout << endl;
 	ma.initialize();
+	cout<<"the initialized sequence is:";
 	ma.middle(ma.getroot());
 	cout << endl;
 	ma.insert('w');
 	//ma.middle(ma.getroot());
+	cout<<"insert 'w',then:";
 	ma.level(ma.getroot());
 	cout << endl;
 	ma.erase();
+	cout<<"erase the root value,then:";
 	//ma.level(ma.getroot());
 	ma.middle(ma.getroot());
-	ma.sort();
+	//ma.sort();
 	system("pause");
 	return 0;
 }
