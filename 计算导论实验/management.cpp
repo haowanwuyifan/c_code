@@ -6,7 +6,7 @@
 #define LEN 15
 #define N 15
 
-struct student
+struct student//学生信息格式
 {
 	char snumber[LEN];
 	char name[LEN];
@@ -14,7 +14,7 @@ struct student
 	float score[3];
 }st[N];
 
-int k = 1, n = 0, m = 0;
+int k = 1, n = 0, m = 0;//k位控制开关的值，n是录入的学生的数量，m是要增加的数量
 void insert();//插入信息
 void erase();//删除信息
 void seek();//查找信息
@@ -22,9 +22,11 @@ void modify();//更改信息
 void statistic();//统计成绩
 void outfile();//保存信息
 void menu();//菜单界面
+void fresh();//刷新信息，确定n的值
 
 int main()
 {
+	fresh();
 	while (k)
 	{
 		menu();
@@ -33,14 +35,14 @@ int main()
 	return 0;
 }
 
-void menu()
+void menu()//菜单界面，包含选项
 {
 	printf("*******************************************\n");
 	printf("**************成绩管理系统*****************\n");
 	printf("*******1.保存信息*****2.插入信息***********\n");
 	printf("*******3.删除信息*****4.修改信息***********\n");
 	printf("*******5.查询信息*****6.统计成绩***********\n");
-	printf("**************7.退出系统*******************\n");
+	printf("*******7.退出系统*****8.刷新信息***********\n");
 	printf("please input your options:");
 	int num;
 	scanf("%d", &num);
@@ -67,12 +69,15 @@ void menu()
 	case 7:
 		k = 0;
 		break;
+	case 8:
+		fresh();
+		break;
 	default:
 		printf("请重新输入");
 	}
 }
 
-void outfile()
+void outfile()//录入信息，每次插入后将信息写入文件
 {
 	int i;
 	FILE * fp;
@@ -84,7 +89,7 @@ void outfile()
 	fclose(fp);
 }
 
-void insert()
+void insert()//插入信息
 {
 	int j = m;
 	printf("输入要增加的数量:");
@@ -114,7 +119,7 @@ void insert()
 	printf("信息已增加");
 }
 
-void seek()
+void seek()//查找学生的信息
 {
 	char store[LEN];
 	printf("输入要查找的学号:");
@@ -122,20 +127,30 @@ void seek()
 	FILE* fp;
 	fp = fopen("D:/test/student.txt", "r");
 	char buff[LEN];
-	char output[53];
-	int tag = 0;
+	char output[100];
+	int tag = 0;					//标记
 	for (int i = 0; i < n; i++)
 	{
-		fseek(fp, (i * 37), SEEK_SET);
-		fscanf(fp, "%s", &buff);
-		if (strcmp(store, buff) == 0)
+		memset(buff, 0, LEN);
+		fgets(output, 100, fp);		//将一行信息写入一个数组中
+		int j = 0;
+		while (output[j] != ' ')	//将这行信息的学号部分拿出来
 		{
-			fgets(output, 53, (FILE*)fp);
+			buff[j] = output[j];
+			j++;
+		}
+		buff[j] = '\0';
+		//fseek(fp, (i * 37), SEEK_SET);
+		//fscanf(fp, "%s", &buff);
+		if (strcmp(store, buff) == 0)//判断学号是否相同
+		{
+			//fgets(output, 53, (FILE*)fp);
+			printf("学号   姓名   性别   计算机导论成绩  大学英语成绩  高等数学成绩\n");
 			printf("%s", output);
-			tag = 1;
+			tag = 1;			//找到后标记设为1
 		}
 	}
-	if (tag == 0)
+	if (tag == 0)		//如果标记不变，则没有要找的学生
 	{
 		printf_s("学号不存在",sizeof("学号不存在"));
 	}
@@ -150,18 +165,28 @@ void erase()
 	FILE* fp1;
 	FILE* fp2;
 	fp1 = fopen("D:/test/student.txt", "r");
-	fp2 = fopen("D:/test/temp.txt", "w+");
+	fp2 = fopen("D:/test/temp.txt", "w+");//创建临时文件
 	char buff[LEN];
-	char output[52];
+	char output[100];
 	for (int i = 0; i < n; i++)
 	{
-		fseek(fp1, (i * 37), SEEK_SET);
-		fgets(buff, 13, fp1);
+		//fseek(fp1, (i * 37), SEEK_SET);
+		memset(buff, 0, LEN);
+		fgets(output, 100, fp1);
+		/*strncpy(buff, output, 12);
+		buff[12] = '\0';*/
+		int j = 0;
+		while (output[j] != ' ')
+		{
+			buff[j] = output[j];
+			j++;
+		}
+		buff[j] = '\0';
 		if (strcmp(store, buff) != 0)
 		{
-			fseek(fp1, (i * 37), SEEK_SET);
-			fgets(output, 52, fp1);
-			fprintf(fp2, output);
+			//fseek(fp1, (i * 37), SEEK_SET);
+			//fgets(output, 100, fp1);
+			fprintf(fp2, output);		//如果学号不是要删除的，将字符串写入临时文件
 		}
 		else
 		{
@@ -171,7 +196,7 @@ void erase()
 	fclose(fp1);
 	fclose(fp2);
 	remove("D:/test/student.txt");
-	rename("D:/test/temp.txt", "D:/test/student.txt");
+	rename("D:/test/temp.txt", "D:/test/student.txt");//删除旧文件，将临时文件更名
 	n--;
 }
 
@@ -183,17 +208,24 @@ void modify()
 	FILE* fp1;
 	FILE* fp2;
 	fp1 = fopen("D:/test/student.txt", "r");
-	fp2 = fopen("D:/test/tep.txt", "w");
+	fp2 = fopen("D:/test/tep.txt", "w+");
 	char buff[LEN];
-	char output[52];
+	char output[100];
 	for (int i = 0; i < n; i++)
 	{
-		fseek(fp1, (i * 37), SEEK_SET);
-		fgets(buff, 13, fp1);
+		memset(buff, 0, LEN);
+		fgets(output, 100, fp1);		//将一行信息写入一个数组中
+		int j = 0;
+		while (output[j] != ' ')	//将这行信息的学号部分拿出来
+		{
+			buff[j] = output[j];
+			j++;
+		}
+		buff[j] = '\0';
 		if (strcmp(store, buff) != 0)
 		{
-			fseek(fp1, (i * 37), SEEK_SET);
-			fgets(output, 52, fp1);
+			//fseek(fp1, (i * 37), SEEK_SET);
+			//fgets(output, 52, fp1);
 			fprintf(fp2, output);
 		}
 		else
@@ -208,8 +240,7 @@ void modify()
 	n--;
 
 
-		printf("输入学生的学号：");
-		scanf("%s", st[0].snumber);
+		strcpy(st[0].snumber, store);
 		printf("输入学生的姓名：");
 		scanf("%s", st[0].name);
 		printf("输入学生的性别：");
@@ -237,20 +268,65 @@ void statistic()
 	FILE* fp;
 	fp = fopen("D:/test/student.txt", "r");
 	char buff[LEN];
+	char output[100];
 	float avg;
 	for (int i = 0; i < n; i++)
 	{
-		fseek(fp, i * 37, SEEK_SET);
-		fscanf(fp, "%s", &buff);
-		if (strcmp(store, buff) == 0)
+		memset(buff, 0, LEN);
+		fgets(output, 100, fp);		//将一行信息写入一个数组中
+		int j = 0;
+		while (output[j] != ' ')	//将这行信息的学号部分拿出来
+		{
+			buff[j] = output[j];
+			j++;
+		}
+		buff[j] = '\0';
+		if (strcmp(store, buff) == 0)//将拿出的信息和需要统计的学号的信息比较，若相同，进行统计
 		{
 			float a, b, c;
-			fseek(fp, (i * 37 + 20), SEEK_SET);
+			fseek(fp, -17, SEEK_CUR);
 			fscanf(fp, "%f", &a);
 			fscanf(fp, "%f", &b);
 			fscanf(fp, "%f", &c);
 			avg = (a + b + c) / 3;
 			printf("%3.1f", avg);
+		}
+	}
+	fclose(fp);
+}
+
+void fresh()//刷新信息
+{
+	n = 0;
+	FILE* fp;
+	int ch;
+	fp = fopen("D:/test/student.txt", "r");
+	if (fp == NULL)
+	{
+		//exit(0);
+		return;
+	}
+	else
+	{
+		ch = fgetc(fp);
+		char buff[100];
+		if (ch != EOF)//判断文件是否为空
+		{
+			fseek(fp, 0, SEEK_SET);
+			while (1)					//文件每有1行，n加1
+			{
+				memset(buff, 0, 100);
+				fgets(buff, 100, fp);
+				if (buff[0] != '\0')
+				{
+					n++;
+					memset(buff, 0, 100);
+				}
+				else
+				{
+					break;
+				}
+			}
 		}
 	}
 	fclose(fp);
