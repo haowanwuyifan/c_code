@@ -26,7 +26,7 @@ void fresh();//刷新信息，确定n的值
 
 int main()
 {
-	fresh();
+	//fresh();
 	while (k)
 	{
 		menu();
@@ -55,15 +55,19 @@ void menu()//菜单界面，包含选项
 		insert();
 		break;
 	case 3:
+		fresh();
 		erase();
 		break;
 	case 4:
+		fresh();
 		modify();
 		break;
 	case 5:
+		fresh();
 		seek();
 		break;
 	case 6:
+		fresh();
 		statistic();
 		break;
 	case 7:
@@ -110,7 +114,7 @@ void insert()//插入信息
 		scanf("%f", &st[j].score[0]);
 		printf("输入学生高等数学的成绩：");
 		scanf("%f", &st[j].score[1]);
-		printf("输入学生线性代数的成绩：");
+		printf("输入学生大学英语的成绩：");
 		scanf("%f", &st[j].score[2]);
 		j++;
 	}
@@ -145,7 +149,7 @@ void seek()//查找学生的信息
 		if (strcmp(store, buff) == 0)//判断学号是否相同
 		{
 			//fgets(output, 53, (FILE*)fp);
-			printf("学号   姓名   性别   计算机导论成绩  大学英语成绩  高等数学成绩\n");
+			printf("    学号    姓名 性别 计算机导论 高等数学 大学英语\n");
 			printf("%s", output);
 			tag = 1;			//找到后标记设为1
 		}
@@ -249,7 +253,7 @@ void modify()
 		scanf("%f", &st[0].score[0]);
 		printf("输入学生高等数学的成绩：");
 		scanf("%f", &st[0].score[1]);
-		printf("输入学生线性代数的成绩：");
+		printf("输入学生大学英语的成绩：");
 		scanf("%f", &st[0].score[2]);
 	    n++;
 		FILE * fp;
@@ -303,8 +307,8 @@ void fresh()//刷新信息
 	fp = fopen("D:/test/student.txt", "r");
 	if (fp == NULL)
 	{
-		//exit(0);
-		return;
+		exit(0);
+		//return;
 	}
 	else
 	{
