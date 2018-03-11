@@ -116,10 +116,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\编程练习\AVL.cpp" />
+    <ClInclude Include="myqueue.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="myqueue.h" />
+    <ClCompile Include="AVL.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
