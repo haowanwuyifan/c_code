@@ -3,8 +3,6 @@
 #include"myqueue.h"
 using namespace std;
 
-
-
 struct store
 {
 	int contant;
@@ -39,6 +37,9 @@ public:
 	void r_rroll(node* t);						//RR旋转
 	void l_rroll(node* t);						//LR旋转
 	void r_lroll(node* t);						//RL旋转
+	void merge(node* t);						//合并两棵AVL树
+	void devide(node* t);						//将一棵AVL树分裂
+	void iterator(node* first, node* t,node* st);
 
 private:
 	node* root;
@@ -101,7 +102,10 @@ node* AVLtree::getroot()
 
 void AVLtree::test()
 {
-	cout << root->balance << endl;
+	node* m = root->rightchild;
+	node* t=NULL;
+	iterator(root, m,t);
+	cout << t->balance << endl;
 }
 
 int AVLtree::gettsize()
@@ -133,6 +137,36 @@ void AVLtree::getbalance(node* t)
 		t->n_height = (getheight(t->leftchild) > getheight(t->rightchild)) ? getheight(t->leftchild) : getheight(t->rightchild);
 	}
 
+}
+
+void AVLtree::iterator(node* first,node* t,node* st)
+{
+	if (first == NULL)
+	{
+		return ;
+	}
+	if (first == t)
+	{
+		st = t;
+		return ;
+	}
+	iterator(first->leftchild, t,st);
+	iterator(first->rightchild, t,st);
+	if (left == NULL)
+	{
+		st = first->leftchild;
+		return;
+	}
+	if (right == NULL)
+	{
+		st = first->rightchild;
+		return;
+	}
+	else
+	{
+		st = first;
+		return;
+	}
 }
 
 void AVLtree::l_lroll(node* t)
@@ -262,6 +296,7 @@ int main()
 	void (AVLtree::*func)(node*);
 	func = &AVLtree::getbalance;
 	Ascend(tr, func, tr.getroot());
+	//node* x=tr.iterator(tr.getroot(),tr.get)
 	tr.test();
 	system("pause");
 	return 0;
