@@ -31,7 +31,7 @@ public:
 	void right_left();							//RL旋转
 	void test();								//测试用函数
 	node* getroot();							//得到节点
-	void standard(node* t);							//标准化AVL树
+	node* standard(node* t);							//标准化AVL树
 	int gettsize();								//得到长度
 	void l_lroll(node* t);						//LL旋转
 	void r_rroll(node* t);						//RR旋转
@@ -39,8 +39,7 @@ public:
 	void r_lroll(node* t);						//RL旋转
 	void merge(node* t);						//合并两棵AVL树
 	void devide(node* t);						//将一棵AVL树分裂
-	void iterator(node* first, node* t,node* st);
-
+	node* iterator(node* t,node* y);
 private:
 	node* root;
 	int height;
@@ -59,6 +58,7 @@ void AVLtree::buildtree(int* key)
 	root=new node;
 	root->element.first=key[0];
 	root->element.second=(char)(key[0]+96);
+	root->n_side = -1;
 	root->leftchild=root->rightchild=NULL;
 	for(int i=1;i<tsize;i++)
 	{
@@ -74,8 +74,20 @@ void AVLtree::buildtree(int* key)
 				current->leftchild = new node;
 				current->leftchild->element.first = key[i];
 				current->leftchild->element.second = (char)(key[i] + 96);
+				current->leftchild->n_side = -1;
 				current->leftchild->leftchild = current->leftchild->rightchild = NULL;
-				standard(root);
+				node* t = standard(root);
+				if (t->balance == 2 || t->balance == -2)
+				{
+					if (t->leftchild != NULL && t->leftchild->leftchild == current)
+					{
+						l_lroll(t);
+					}
+					else if (t->rightchild !=NULL && t->rightchild->leftchild == current)
+					{
+						r_lroll(t);
+					}
+				}
 				break;
 			}
 			if (key[i] > current->element.first&&current->rightchild != NULL)
@@ -87,8 +99,20 @@ void AVLtree::buildtree(int* key)
 				current->rightchild = new node;
 				current->rightchild->element.first = key[i];
 				current->rightchild->element.second = (char)(key[i] + 96);
+				current->rightchild->n_side = -1;
 				current->rightchild->leftchild = current->rightchild->rightchild = NULL;
-				standard(root);
+				node* t = standard(root);
+				if (t->balance == 2 || t->balance == -2)
+				{
+					if (t->leftchild != NULL && t->leftchild->rightchild == current)
+					{
+						l_rroll(t);
+					}
+					else if (t->rightchild != NULL && t->rightchild->rightchild == current)
+					{
+						r_rroll(t);
+					}
+				}
 				break;
 			}
 		}
@@ -102,10 +126,17 @@ node* AVLtree::getroot()
 
 void AVLtree::test()
 {
-	node* m = root->rightchild;
-	node* t=NULL;
-	iterator(root, m,t);
-	cout << t->balance << endl;
+	node* m = root/*->rightchild->leftchild*/;
+	try 
+	{
+		//node* t = iterator(root, m);
+		cout << m->balance << endl;
+	}
+	catch (const char* msg)
+	{
+		cerr << msg << endl;
+	}
+	
 }
 
 int AVLtree::gettsize()
@@ -129,8 +160,6 @@ void AVLtree::getbalance(node* t)
 {
 	if(t==NULL)
 		cout<<"请输入内容"<<endl;
-	//else if(t->leftchild=t->rightchild==NULL)
-		//t->balance=0;
 	else
 	{
 		t->balance=getheight(t->leftchild)-getheight(t->rightchild);
@@ -139,57 +168,93 @@ void AVLtree::getbalance(node* t)
 
 }
 
-void AVLtree::iterator(node* first,node* t,node* st)
+node* AVLtree::iterator(node* t,node* y)
 {
-	if (first == NULL)
+	Queue qu(gettsize());
+	qu.createqueue();
+	qu.push(t);
+	while (qu.empty())
 	{
-		return ;
-	}
-	if (first == t)
-	{
-		st = t;
-		return ;
-	}
-	iterator(first->leftchild, t,st);
-	iterator(first->rightchild, t,st);
-	if (left == NULL)
-	{
-		st = first->leftchild;
-		return;
-	}
-	if (right == NULL)
-	{
-		st = first->rightchild;
-		return;
-	}
-	else
-	{
-		st = first;
-		return;
+		if (y == root)
+		{
+			return root;
+		}
+		if (t == NULL)
+		{
+			{
+				throw"error";
+			}
+			return t;
+		}
+		if (t->leftchild == y)
+		{
+			t->n_side = 0;
+			return t;
+			break;
+		}
+		if (t->rightchild == y)
+		{
+			t->n_side = 1;
+			return t;
+		}
+		if (t->leftchild != NULL)
+		{
+			qu.push(t->leftchild);
+		}
+		if (t->rightchild != NULL)
+		{
+			qu.push(t->rightchild);
+		}
+		qu.pop();
+		t = qu.getqueue();
 	}
 }
 
 void AVLtree::l_lroll(node* t)
 {
-
+	node* temp = t->leftchild;
+	t->leftchild = t->leftchild->rightchild;
+	temp->rightchild = t;
+	node* parent = iterator(root,t);
+	if (parent->n_side == 0)
+	{
+		parent->leftchild = temp;
+	}
+	if (parent->n_side == 1)
+	{
+		parent->rightchild = temp;
+	}
 }
 
 void AVLtree::r_rroll(node* t)
 {
-
+	node* temp = t->rightchild;
+	t->rightchild = t->rightchild->leftchild;
+	temp->leftchild = t;
+	node* parent = iterator(root, t);
+	if (parent->n_side == 0)
+	{
+		parent->leftchild = t;
+	}
+	if (parent->n_side == 1)
+	{
+		parent->rightchild = temp;
+	}
 }
 
 void AVLtree::l_rroll(node* t)
 {
-
+	r_rroll(t->leftchild);
+	l_lroll(t);
 }
 
 void AVLtree::r_lroll(node* t)
 {
-
+	l_lroll(t->rightchild);
+	r_rroll(t);
 }
 
-void AVLtree::standard(node* t)
+node* AVLtree::standard(node* t)
 {
 	node* current = t;
 	Queue qu(gettsize());
@@ -198,7 +263,7 @@ void AVLtree::standard(node* t)
 	while (qu.empty())
 	{
 		getbalance(t);
-		if ((current->balance == 2 || current->balance == -2) && current->n_height < t->n_height)
+		if ((t->balance == 2 || t->balance == -2) && current->n_height > t->n_height)
 		{
 			current = t;
 		}
@@ -213,7 +278,7 @@ void AVLtree::standard(node* t)
 		qu.pop();
 		t = qu.getqueue();
 	}
-	
+	return current;
 }
 
 //void AVLtree::level(node* t)
@@ -238,7 +303,7 @@ void AVLtree::standard(node* t)
 //	}
 //}
 
-void Ascend(AVLtree av,void (AVLtree::*function)(node*),node* t)
+void Temp(AVLtree av,void (AVLtree::*function)(node*),node* t)
 {
 	Queue qu(av.gettsize());
 	qu.createqueue();
@@ -295,7 +360,7 @@ int main()
 	tr.buildtree(a);
 	void (AVLtree::*func)(node*);
 	func = &AVLtree::getbalance;
-	Ascend(tr, func, tr.getroot());
+	Temp(tr, func, tr.getroot());
 	//node* x=tr.iterator(tr.getroot(),tr.get)
 	tr.test();
 	system("pause");

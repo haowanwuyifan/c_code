@@ -9,6 +9,7 @@ struct node
 	node* rightchild;
 	int balance;
 	int n_height;
+	int n_side;
 };//创建节点类型,包含pair类型的元素，左孩子，右孩子
 
 class Queue
