@@ -52,3 +52,23 @@ void erase(int* a, int size_a, int key)
 		}
 	}
 }
+
+void select(int* list, int m)
+{
+	int i, j, temp;
+	int k;
+	for (i = 0; i<m - 1; i++)
+	{
+		k = 0;
+		for (j = 0; j<m - i; j++)
+		{
+			if (list[k]<list[j])
+				k = j;
+		}
+		temp = list[m - 1 - i];
+		list[m - 1 - i] = list[k];
+		list[k] = temp;
+	}
+	for (int i = 0; i<m; i++)
+		cout << list[i];
+}
