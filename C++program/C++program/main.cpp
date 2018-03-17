@@ -22,11 +22,28 @@ int main()
 	cin >> content_b;
 	initial(a, size_a, content_a);
 	initial(b, size_b, content_b);
-	merge(a, size_a, b, size_b, c);
-	cout << "请输入想要搜索的数值：";
-	int search_key;
-	cin >> search_key;
-	index(c, size_c, search_key);
+	merge_plus(a, size_a, b, size_b, c);
+	cout << "顺序归并后的数组：";
+	for (int i = 0; i < size_c; i++)
+	{
+		cout << c[i] << " ";
+	}
+	cout << endl;
+	cout << "请输入要操作的数组：";
+	int option;
+	cin >> option;
+	if (option == 1)
+	{
+		choose(a, size_a);
+	}
+	if (option == 2)
+	{
+		choose(b, size_b);
+	}
+	if (option == 3)
+	{
+		choose(c, size_c);
+	}
 	system("pause");
 	return 0;
 }
