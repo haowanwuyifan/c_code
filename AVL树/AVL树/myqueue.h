@@ -12,6 +12,12 @@ struct node
 	int n_side;
 };//创建节点类型,包含pair类型的元素，左孩子，右孩子
 
+struct store
+{
+	int contant;
+	store* next;
+};
+
 class Queue
 {
 public:
