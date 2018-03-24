@@ -773,4 +773,3 @@ void Temp(AVLtree av, void (AVLtree::*function)(int), node* t)
 		t = qu.getqueue();
 	}
 }
-
