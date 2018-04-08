@@ -116,8 +116,6 @@ void Rational::seq()
 		cout << "½á¹ûÎª£º" << fenzi << endl;
 }
 
-
-
 int to_int(char* a, int* x, int* y)
 {
 	int i = 0;
