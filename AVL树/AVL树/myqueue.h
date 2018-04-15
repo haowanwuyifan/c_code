@@ -11,6 +11,8 @@ struct node
 	int n_height;
 	int n_side;
 	int divd;
+	int horizontal_position;
+	int distance_to_root;
 };//创建节点类型,包含pair类型的元素，左孩子，右孩子
 
 struct store

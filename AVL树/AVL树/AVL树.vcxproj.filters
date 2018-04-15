@@ -18,8 +18,8 @@
     <ClInclude Include="myqueue.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AVL.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="..\..\..\..\Qt_ccode\PaintBinTree\Bintree.h">
+      <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,15 @@
 
 #include<iostream>
 #include<stdlib.h>
+#include <algorithm>
+#include <iostream>
+#include <cstdio>
+
+using std::max;
+using std::cout;
+using std::endl;
+#define posilchild(p) ((p)->leftchild ? (p)->leftchild->horizontal_position : (p)->horizontal_position)
+#define posirchild(p) ((p)->rightchild ? (p)->rightchild->horizontal_position : (p)->horizontal_position)
 #include"myqueue.h"
 using namespace std;
 
@@ -32,6 +41,11 @@ public:
 	void Insert(node* t);
 	void getdivide(int key, node* t);
 	int getdiv(node* t);
+	bool empty();
+	void calculatePosition();
+	void updateDistanceToRoot(node* x);
+	node* succ(node *x);
+	void display();
 private:
 	node * root;
 	int height;
@@ -58,6 +72,7 @@ void AVLtree::buildtree(int* key)
 	for (int i = 1; i<i_size; i++)
 	{
 		Insert(key[i]);
+		display();
 	}
 
 }
@@ -462,16 +477,19 @@ void AVLtree::Insert(int key)
 			current->leftchild->n_side = -1;
 			current->leftchild->divd = 0;
 			current->leftchild->leftchild = current->leftchild->rightchild = NULL;
+			display();
 			node* t = standard(root);
 			if (t->balance == 2)
 			{
 				if (t->leftchild->balance == 1)
 				{
 					l_lroll(t);
+					display();
 				}
 				else if (t->leftchild->balance == -1)
 				{
 					l_rroll(t);
+					display();
 				}
 			}
 			if (t->balance == -2)
@@ -760,6 +778,162 @@ void Temp(AVLtree av, void (AVLtree::*function)(int), node* t)
 		if (t->divd = 1)
 		{
 			(av.*function)(t->element.first);
+		}
+		if (t->leftchild != NULL)
+		{
+			qu.push(t->leftchild);
+		}
+		if (t->rightchild != NULL)
+		{
+			qu.push(t->rightchild);
+		}
+		qu.pop();
+		t = qu.getqueue();
+	}
+}
+
+bool AVLtree::empty()
+{
+	if (root == NULL)
+	{
+		return 0;
+	}
+	else
+		return 1;
+}
+
+node* AVLtree::succ(node* x)
+{
+
+	if (x->rightchild != NULL)
+	{
+		x = x->rightchild;
+		while (x->leftchild != NULL)
+			x = x->leftchild;
+	}
+	else
+	{
+
+		node* parent = iterator(root, x);
+		while (parent != NULL && parent->leftchild != x)
+			x = parent;
+		parent = iterator(root, x);
+		x = parent;
+	}
+	return x;
+}
+
+void AVLtree::updateDistanceToRoot(node* x)
+{
+	if (!x) return;
+	int i = 0;
+	node* p = x;
+	while (p != NULL)
+	{
+		p = iterator(root, p);
+		++i;
+	}
+
+	x->distance_to_root = i - 1;
+
+	Queue q(gettsize());
+	q.createqueue();
+	q.push(x);
+	while (q.empty())
+	{
+		node* parent = iterator(root, x);
+		if (x && parent)
+			x->distance_to_root = parent->distance_to_root + 1;
+		if (x->leftchild != NULL)
+		{
+			q.push(x->leftchild);
+		}
+		if (x->rightchild != NULL)
+		{
+			q.push(x->rightchild);
+		}
+		q.pop();
+		x = q.getqueue();
+	}
+
+}
+
+void AVLtree::calculatePosition()
+{
+	//计算垂直位置
+	updateDistanceToRoot(root);
+
+
+	//计算水平位置
+	int count = 0;
+	node* x = root;
+	//找到中序遍历的第一个结点
+	while (x && x->leftchild != NULL)
+		x = x->leftchild;
+	//按照中序遍历的次序记录结点访问次序
+	while (x != NULL)
+	{
+		x->horizontal_position = ++count;
+		x->horizontal_position *= 4;    //水平位置放缩4倍 命令行显示时结点之间的空隙4个字符
+		succ(x);
+	}
+
+
+}
+
+void AVLtree::display()
+{
+	calculatePosition();
+	int nowheight = 0;
+	int lastheight = 0;
+	int levelcount = 0;
+	int i = 0;
+	node* t = root;
+	Queue qu(gettsize());
+	qu.createqueue();
+	qu.push(t);
+	while (qu.empty())
+	{
+		long long int tmpposi;
+		if (t)
+		{
+			nowheight = t->distance_to_root;
+			if (nowheight != lastheight)
+			{
+				lastheight = nowheight;
+				cout << endl;
+				levelcount = 0;
+			}
+			for (i = levelcount; i < posilchild(t); ++i)
+			{
+				printf(" ");
+			}
+			int firstprint = 1;
+			for (; i < t->horizontal_position; ++i)
+			{
+				if (firstprint)
+				{
+					printf("_");
+					firstprint = 0;
+				}
+				else
+					printf("_");
+			}
+			tmpposi = cout.tellp();
+			cout << t->element.second;
+			long long int tellpppp = cout.tellp() - tmpposi;
+			levelcount += (int)(tellpppp);
+
+			levelcount += t->horizontal_position - levelcount;
+
+			for (i = levelcount; i < posirchild(t); ++i)
+			{
+				if (i == posirchild(t) - 1)
+					printf("_");
+				else
+					printf("_");
+			}
+			levelcount = i;
 		}
 		if (t->leftchild != NULL)
 		{

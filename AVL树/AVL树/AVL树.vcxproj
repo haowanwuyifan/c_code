@@ -116,7 +116,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AVL.h" />
+    <ClInclude Include="..\..\..\..\Qt_ccode\PaintBinTree\Bintree.h" />
     <ClInclude Include="myqueue.h" />
   </ItemGroup>
   <ItemGroup>
