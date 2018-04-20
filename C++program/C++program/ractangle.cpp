@@ -5,17 +5,21 @@ using namespace std;
 class Ractangle
 {
 public:
+	Ractangle() {};
 	Ractangle(double x, double y, double length,double width)
 		:_x(x),_y(y),_length(length),_width(width){}
 	double area();
 	bool equal(const Ractangle &b) const;
 	int change_size(double time);
 	int move(double x,double y);
-	double overlap(const Ractangle &b) const;
+	Ractangle overlap(const Ractangle &b) const;
 	double get_x() const { return _x; }
 	double get_y() const { return _y; }
 	double get_length() const { return _length; }
 	double get_width() const { return _width; }
+	double min(double x, const double y) const;
+	double max(double x, const double y) const;
+	friend bool operator!=(Ractangle &a,int x);
 private:
 	double _x;
 	double _y;
@@ -24,6 +28,16 @@ private:
 };
 
 int k = 1;
+
+double Ractangle::min(double x,double y) const
+{
+	return x <= y ? x : y;
+}
+
+double Ractangle::max(double x, double y) const
+{
+	return x <= y ? y : x;
+}
 
 double Ractangle::area()
 {
@@ -64,7 +78,7 @@ int Ractangle::move(double x, double y)
 	return 1;
 }
 
-double Ractangle::overlap(const Ractangle &b) const
+Ractangle Ractangle::overlap(const Ractangle &b) const
 {
 	double by = b.get_y() - b.get_width();
 	double bx = b.get_x() + b.get_length();
@@ -72,81 +86,100 @@ double Ractangle::overlap(const Ractangle &b) const
 	double ax = _x + _length;
 	double w_new;
 	double l_new;
+	double x;
+	double y;
 	if (_y <= b.get_y())
 	{
 			w_new = _y - by;
+			y = _y;
 			if (w_new <= 0)
 			{
 				w_new = 0;
+				y = NULL;
 			}
-			if (w_new >= b.get_length())
+			if (w_new >= _width)
 			{
-				w_new = b.get_length();
+				w_new = _width;
 			}
-			if (_x <= b.get_x())
+			if (_x <= bx)
 			{
 				l_new = ax - b.get_x();
+				x = max(_x, b.get_x());
 				if (l_new <= 0)
 				{
 					l_new = 0;
+					x = NULL;
 				}
-				else if (l_new >= b.get_length())
+				else if (l_new >= min(_length,b.get_length()))
 				{
-					l_new = b.get_length();
+					l_new = min(_length, b.get_length());
 				}
 			}
 			else if (_x > b.get_x())
 			{
 				l_new = bx - _x;
+				x = min(_x, b.get_x());
 				if (l_new <= 0)
 				{
 					l_new = 0;
+					x = NULL;
 				}
-				else if (l_new >= b.get_length())
+				else if (l_new >= min(_length, b.get_length()))
 				{
-					l_new = b.get_length();
+					l_new = min(_length, b.get_length());
 				}
 			}
-			return l_new * w_new;
+			
 	}
 	else if (_y > b.get_y())
 	{
 		w_new = b.get_y() - ay;
+		y = b.get_y();
 		if (w_new <= 0)
 		{
 			w_new = 0;
+			y = NULL;
 		}
-		if (w_new >= b.get_length())
+		if (w_new >= b.get_width())
 		{
-			w_new = b.get_length();
+			w_new = b.get_width();
 		}
-		if (_x <= b.get_x())
+		if (_x <= bx)
 		{
 			l_new = ax - b.get_x();
+			x = max(_x, b.get_x());
 			if (l_new <= 0)
 			{
 				l_new = 0;
+				x = NULL;
 			}
-			else if (l_new >= b.get_length())
+			else if (l_new >= min(_length, b.get_length()))
 			{
-				l_new = b.get_length();
+				l_new = min(_length, b.get_length());
 			}
 		}
 		else if (_x > b.get_x())
 		{
 			l_new = bx - _x;
+			x = min(_x, b.get_x());
 			if (l_new <= 0)
 			{
 				l_new = 0;
+				x = NULL;
 			}
-			else if (l_new >= b.get_length())
+			else if (l_new >= min(_length, b.get_length()))
 			{
-				l_new = b.get_length();
+				l_new = min(_length, b.get_length());
 			}
 		}
-		return l_new * w_new;
+		
 	}
-	
+	if (x != NULL && y != NULL)
+	{
+
+		Ractangle c(x, y, l_new, w_new);
+		return c;
+	}
 }
 
 
@@ -234,7 +267,15 @@ void menu(Ractangle &a)
 		int width;
 		cin >> width;
 		Ractangle b(x, y, length, width);
-		cout << "重叠部分的面积为：" << a.overlap(b) << endl;
+		Ractangle c = a.overlap(b);
+		if (c != NULL)
+		{
+			cout << "重叠部分为：" << c.get_x() << " " << c.get_y() << " " << c.get_length() << " " << c.get_width() << endl;
+		}
+		else
+		{
+			cout << "没有重叠！" << endl;
+		}
 		break;
 	}
 	case 6:
@@ -248,7 +289,10 @@ void menu(Ractangle &a)
 	}
 }
 
-
+bool operator!=(Ractangle &a,int x)
+{
+	return a._x != NULL && a._y != NULL;
+}
 
 int main()
 {
