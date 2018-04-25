@@ -31,7 +31,7 @@ public:
 	void l_rroll(node* t);						//LR旋转
 	void r_lroll(node* t);						//RL旋转
 	void merge(AVLtree av);						//合并两棵AVL树
-	void divide(node* t, AVLtree b);						//将一棵AVL树分裂
+	void divide(node* t, AVLtree b,int* n);						//将一棵AVL树分裂
 	node* iterator(node* t, node* y);
 	void erase(int key);
 	node* max_right(node* t);
@@ -700,13 +700,9 @@ void AVLtree::getdivide(int key, node* t)
 	}
 }
 
-void AVLtree::divide(node* t, AVLtree b)
+void AVLtree::divide(node* t, AVLtree b,int* n)
 {
-	int sizea = 0, sizeb = 0;
-	store heada;
-	heada.contant = NULL;
-	heada.next = NULL;
-	store* currenta = &heada;
+	int sizeb = 0;
 	store headb;
 	headb.contant = NULL;
 	headb.next = NULL;
@@ -716,13 +712,6 @@ void AVLtree::divide(node* t, AVLtree b)
 	qu.push(t);
 	while (qu.empty())
 	{
-		if (t->divd == 0)
-		{
-			currenta->next = new store;
-			currenta->next->contant = t->element.first;
-			currenta = currenta->next;
-			sizea++;
-		}
 		if (t->divd == 1)
 		{
 			currentb->next = new store;
@@ -741,24 +730,11 @@ void AVLtree::divide(node* t, AVLtree b)
 		qu.pop();
 		t = qu.getqueue();
 	}
-	int* a = new int[sizea];
-	store* currenta_2 = heada.next;
-	for (int i = 0; i < sizea; i++)
-	{
-		a[i] = currenta_2->contant;
-		currenta_2 = currenta_2->next;
-	}
-	int* bs = new int[sizeb];
 	store* currentb_2 = headb.next;
 	for (int i = 0; i < sizeb; i++)
 	{
-		bs[i] = currentb_2->contant;
+		n[i] = currentb_2->contant;
 		currentb_2 = currentb_2->next;
-	}
-	b.buildtree(bs);
-	for (int i = 0; i < sizea; i++)
-	{
-		Delete(a[i]);
 	}
 }
 
@@ -1005,9 +981,18 @@ void menu(AVLtree tr)
 		cout << "输入要分裂的关键字：";
 		cin >> div;
 		tr.getdivide(div, tr.getroot());
-		int size = tr.getdiv(tr.getroot());
-		AVLtree b(size);
-		tr.divide(tr.getroot(), b);
+		int sizeb = tr.getdiv(tr.getroot());
+		int* n = new int[sizeb];
+		AVLtree b(sizeb);
+		tr.divide(tr.getroot(), b,n);
+		b.buildtree(n);
+		for (int i = 0; i < sizeb; i++)
+		{
+			tr.Delete(n[i]);
+		}
+		tr.display();
+		cout << endl;
+		b.display();
 		break;
 	}
 	case 6:
@@ -1090,12 +1075,12 @@ int main()
 	}
 	AVLtree tr(size);
 	tr.buildtree(a);
+	store ma;
+	store mb;
 	while (k)
 	{
 		menu(tr);
 	}
-	
-	
 	system("pause");
 	return 0;
 }
