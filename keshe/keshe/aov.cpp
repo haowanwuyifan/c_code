@@ -1,6 +1,7 @@
 #include<iostream>
 #include<stdlib.h>
 #include<string>
+#include<vector>
 using namespace std;
 
 struct node
@@ -76,8 +77,8 @@ public:
 	schedule(int size);
 	void calin();
 	void setin();
-	void getpath(node* a);
-	void display();
+	void getpath(vector <pair<string, string>> &a, vector <string> &b);
+	void display(vector <string> &b);
 	bool getin();
 private:
 	int** path;
@@ -92,11 +93,11 @@ schedule::schedule(int size)
 {
 	_size = size;
 	order = 0;
+
 }
 
-void schedule::getpath(node* a)
+void schedule::getpath(vector <pair<string, string>> &a, vector <string> &b)
 {
-	node* t = a;
 	for (int i = 0; i < _size; i++)
 	{
 		path = new int*[_size];
@@ -112,17 +113,32 @@ void schedule::getpath(node* a)
 			path[i][j] = 0;
 		}
 	}
-	while (t != NULL)
+	point = new int[_size];
+	
+	for (int i = 0; i < a.size(); i++)
 	{
-		path[a->relations.first - 1][a->relations.second - 1] = 1;
-		t->next->next;
+		int x = -1, y = -1;
+		for (int j = 0; j < b.size(); j++)
+		{
+			if (b.at(j) == a.at(i).first)
+			{
+				x = j;
+			}
+			if (b.at(j) == a.at(i).second)
+			{
+				y = j;
+			}
+			
+		}
+		if (x > -1 && y > -1)
+		{
+			path[x][y] = 1;
+		}
 	}
-		
 }
 
 void schedule::calin()
 {
-	point = new int[_size];
 	for (int i = 0; i < _size; i++)
 	{
 		point[i] = 0;
@@ -144,20 +160,23 @@ void schedule::setin()
 	st.createstack(_size);
 	if (st.empty())
 	{
-		for (int i = 0; i < _size; i++)
+		for (int j = 0; j < _size; j++)
 		{
-			if (point[i] == 1)
+			for (int i = 0; i < _size; i++)
 			{
-				st.push(i);
-				for (int j = 0; j < _size; j++)
+				if (point[i] == 0)
 				{
-					if (path[i][j] == 1)
+					st.push(i);
+					for (int j = 0; j < _size; j++)
 					{
-						point[j]--;
+						if (path[i][j] == 1)
+						{
+							point[j]--;
+						}
 					}
+					point[i] = -1;
 				}
 			}
-
 		}
 	}
 	else
@@ -165,18 +184,24 @@ void schedule::setin()
 		st.clear();
 		for (int i = 0; i < _size; i++)
 		{
-			if (point[i] == 1)
+			for (int j = 0; j < _size; j++)
 			{
-				st.push(i);
-				for (int j = 0; j < _size; j++)
+				for (int i = 0; i < _size; i++)
 				{
-					if (path[i][j] == 1)
+					if (point[i] == 0)
 					{
-						point[j]--;
+						st.push(i);
+						for (int j = 0; j < _size; j++)
+						{
+							if (path[i][j] == 1)
+							{
+								point[j]--;
+							}
+						}
+						point[i] = -1;
 					}
 				}
 			}
-
 		}
 	}
 }
@@ -189,14 +214,15 @@ bool schedule::getin()
 		inde[order++] = st.getst();
 		st.pop();
 	}
-	return order == _size;
+	return order == _size && order != 0 && _size != 0;
 }
 
-void schedule::display()
+void schedule::display(vector <string> &b)
 {
 	for (int j = order - 1; j >= 0; j--)
 	{
-		cout << inde[j] << " ";
+		
+		cout <<b.at(inde[j]) << " ";
 	}
 	cout << endl;
 }
@@ -204,12 +230,10 @@ void schedule::display()
 int main()
 {
 	//cout << "请输入节点间关系：" << endl;
-	node head;
-	head.next = NULL;
-	node* current = &head;
-	string m,n;
-	string a[1024];
-    a.
+	vector <pair<string,string>> a;
+	vector <string> b;
+	string m;
+	string n;
 	int size = 0;
 	int tsize = 0;
 	string tm;
@@ -217,53 +241,59 @@ int main()
 	{
 		cout << "请输入节点间关系：" << endl;
 		cin >> m;
-		cin >> n;
-		if (m!=n)
+		if (m == "over")
 		{
-			if (tm.empty())
+			break;
+		}
+		if (b.empty())
+		{
+			b.push_back(m);
+		}
+		cin >> n;
+		if (m!=n&&m.length()==4&&n.length()==4)
+		{
+			b.push_back(m);
+			for (int i = 0; i < b.size()-1; i++)
 			{
-				tm = m;
-				tsize++;
+				if (b.at(i) == m)
+				{
+					b.pop_back();
+					break;
+				}
 			}
-			else
+			b.push_back(n);
+			for (int i = 0; i < b.size() - 1; i++)
 			{
-				if (tm != m)
+				if (b.at(i) == n)
 				{
-					tsize++;
-				}
-				if (tm != n)
-				{
-					tsize++;
+					b.pop_back();
+					break;
 				}
 			}
-			current->next = new node;
-			current->next->relations.first = m;
-			current->next->relations.second = n;
-			current = current->next;
-			size++;
+			pair<string, string> t;
+			t.first = m;
+			t.second = n;
+			a.push_back(t);
 		}
 		else
 		{
 			cout << "输入有误！" << endl;
-			break;
+			continue;
 		}
 	}
-	node* t = head.next;
-	pair<int, int>* a = new pair[tsize];
-
-
-	schedule a(size);
-	a.getpath(t);
-	a.calin();
-	a.setin();
-	if (a.getin())
+	
+	schedule sc(b.size());
+	sc.getpath(a,b);
+	sc.calin();
+	sc.setin();
+	if (sc.getin())
 	{
-		a.display();
+		sc.display(b);
 		cout << "没有环路" << endl;
 	}
 	else
 	{
-		a.display();
+		sc.display(b);
 		cout << "有环路" << endl;
 	}
 	system("pause");
