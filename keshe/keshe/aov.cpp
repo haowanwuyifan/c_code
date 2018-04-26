@@ -1,10 +1,11 @@
 #include<iostream>
 #include<stdlib.h>
+#include<string>
 using namespace std;
 
 struct node
 {
-	pair<int, int> relations;
+	pair<string,string> relations;
 	node* next;
 };
 
@@ -200,54 +201,58 @@ void schedule::display()
 	cout << endl;
 }
 
-int max(node* a)
-{
-	node* current = a;
-	int t = 0;
-	while (current != NULL)
-	{
-		int i = current->relations.first < current->relations.second ? current->relations.second : current->relations.first;
-		t = t < i ? i : t;
-		current = current->next;
-	}
-	return t;
-}
-
 int main()
 {
 	//cout << "请输入节点间关系：" << endl;
-	node* current = NULL;
-	node* t = NULL;
-	int m[2];
+	node head;
+	head.next = NULL;
+	node* current = &head;
+	string m,n;
+	string a[1024];
+    a.
 	int size = 0;
+	int tsize = 0;
+	string tm;
 	while (1)
 	{
 		cout << "请输入节点间关系：" << endl;
-		for (int i = 0; i < 2; i++)
+		cin >> m;
+		cin >> n;
+		if (m!=n)
 		{
-			cin >> m[i];
-		}
-		if (m[0] > 0 && m[1] > 0)
-		{
-			current = new node;
-			current->relations.first = m[0];
-			current->relations.second = m[1];
-			if (size == 0)
+			if (tm.empty())
 			{
-				t = current;
+				tm = m;
+				tsize++;
 			}
+			else
+			{
+				if (tm != m)
+				{
+					tsize++;
+				}
+				if (tm != n)
+				{
+					tsize++;
+				}
+			}
+			current->next = new node;
+			current->next->relations.first = m;
+			current->next->relations.second = n;
 			current = current->next;
-			
 			size++;
 		}
 		else
 		{
+			cout << "输入有误！" << endl;
 			break;
 		}
 	}
-	current = t;
-	int _size = max(current);
-	schedule a(_size);
+	node* t = head.next;
+	pair<int, int>* a = new pair[tsize];
+
+
+	schedule a(size);
 	a.getpath(t);
 	a.calin();
 	a.setin();
