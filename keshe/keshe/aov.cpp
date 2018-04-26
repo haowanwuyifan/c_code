@@ -4,12 +4,6 @@
 #include<vector>
 using namespace std;
 
-struct node
-{
-	pair<string,string> relations;
-	node* next;
-};
-
 class stack
 {
 public:
@@ -234,9 +228,6 @@ int main()
 	vector <string> b;
 	string m;
 	string n;
-	int size = 0;
-	int tsize = 0;
-	string tm;
 	while (1)
 	{
 		cout << "请输入节点间关系：" << endl;
@@ -281,7 +272,6 @@ int main()
 			continue;
 		}
 	}
-	
 	schedule sc(b.size());
 	sc.getpath(a,b);
 	sc.calin();
