@@ -7,20 +7,22 @@ class Rational
 public:
 	Rational() {};
 	void set(int a, int b);
-	void add(Rational b);
-	void sub(Rational b);
-	void mul(Rational a, Rational b);
-	int div(Rational a, Rational b);
+	friend Rational operator+(Rational a, Rational b);
+	friend Rational operator-(Rational a, Rational b);
+	friend Rational operator*(Rational a, Rational b);
+	friend Rational operator/(Rational a, Rational b);
 	int get_fenzi();
 	int get_fenmu();
-	int sim(int a, int b);
+	void set_fenzi(int);
+	void set_fenmu(int);
+	friend int sim(int a, int b);
 	void seq();
 private:
 	int fenzi;
 	int fenmu;
 };
 
-int Rational::sim(int a, int b)
+int sim(int a, int b)
 {
 	int sum = 1;
 	int min = a < b ? a : b;
@@ -45,64 +47,21 @@ int Rational::get_fenmu()
 	return fenmu;
 }
 
+void Rational::set_fenmu(int a)
+{
+	fenmu = a;
+}
+
+void Rational::set_fenzi(int a)
+{
+	fenzi = a;
+}
+
 void Rational::set(int a, int b)
 {
 	fenzi = a / sim(a, b);
 	fenmu = b / sim(a, b);
 
-}
-
-void Rational::add(Rational b)
-{
-	int fenmu_c = this->fenmu*b.get_fenmu();
-	int fenzi_c = this->fenzi*b.get_fenmu() + this->fenmu*b.get_fenzi();
-	int t = sim(fenzi_c, fenmu_c);
-	fenmu_c = fenmu_c / t;
-	fenzi_c = fenzi_c / t;
-	fenzi = fenzi_c;
-	fenmu = fenmu_c;
-}
-
-void Rational::sub(Rational b)
-{
-	int fenmu_c = this->fenmu*b.get_fenmu();
-	int fenzi_c = this->fenzi*b.get_fenmu() - this->fenmu*b.get_fenzi();
-	int t = sim(fenzi_c, fenmu_c);
-	fenmu_c = fenmu_c / t;
-	fenzi_c = fenzi_c / t;
-	fenzi = fenzi_c;
-	fenmu = fenmu_c;
-}
-
-void Rational::mul(Rational a, Rational b)
-{
-	int fenzi_c = a.get_fenzi()*b.get_fenzi();
-	int fenmu_c = a.get_fenmu()*b.get_fenmu();
-	int t = sim(fenzi_c, fenmu_c);
-	fenmu_c = fenmu_c / t;
-	fenzi_c = fenzi_c / t;
-	fenzi = fenzi_c;
-	fenmu = fenmu_c;
-}
-
-int Rational::div(Rational a, Rational b)
-{
-	if (b.get_fenzi() != 0)
-	{
-		int fenzi_c = a.get_fenzi()*b.get_fenmu();
-		int fenmu_c = a.get_fenmu()*b.get_fenzi();
-		int t = sim(fenzi_c, fenmu_c);
-		fenmu_c = fenmu_c / t;
-		fenzi_c = fenzi_c / t;
-		fenzi = fenzi_c;
-		fenmu = fenmu_c;
-		return 0;
-	}
-	else
-	{
-		cout << "除数不能为0！" << endl;
-		return -1;
-	}
 }
 
 void Rational::seq()
@@ -151,5 +110,64 @@ int to_int(char* a, int* x, int* y)
 		return -1;
 	}
 	return 0;
+}
+
+Rational operator+(Rational a, Rational b)
+{
+	Rational c;
+	int fenmu_c = a.get_fenmu()*b.get_fenmu();
+	int fenzi_c = a.get_fenzi()*b.get_fenmu() + a.get_fenmu()*b.get_fenzi();
+	int t = sim(fenzi_c, fenmu_c);
+	fenmu_c = fenmu_c / t;
+	fenzi_c = fenzi_c / t;
+	c.set_fenzi(fenzi_c);
+	c.set_fenmu(fenmu_c);
+	return c;
+}
+
+Rational operator-(Rational a, Rational b)
+{
+	Rational c;
+	int fenmu_c = a.get_fenmu()*b.get_fenmu();
+	int fenzi_c = a.get_fenzi()*b.get_fenmu() - a.get_fenmu()*b.get_fenzi();
+	int t = sim(fenzi_c, fenmu_c);
+	fenmu_c = fenmu_c / t;
+	fenzi_c = fenzi_c / t;
+	c.set_fenzi(fenzi_c);
+	c.set_fenmu(fenmu_c);
+	return c;
+}
+
+Rational operator*(Rational a, Rational b)
+{
+	Rational c;
+	int fenzi_c = a.get_fenzi()*b.get_fenzi();
+	int fenmu_c = a.get_fenmu()*b.get_fenmu();
+	int t = sim(fenzi_c, fenmu_c);
+	fenmu_c = fenmu_c / t;
+	fenzi_c = fenzi_c / t;
+	c.set_fenzi(fenzi_c);
+	c.set_fenmu(fenmu_c);
+	return c;
+}
+
+Rational operator/(Rational a, Rational b)
+{
+	Rational c;
+	if (b.get_fenzi() != 0)
+	{
+		int fenzi_c = a.get_fenzi()*b.get_fenmu();
+		int fenmu_c = a.get_fenmu()*b.get_fenzi();
+		int t = sim(fenzi_c, fenmu_c);
+		fenmu_c = fenmu_c / t;
+		fenzi_c = fenzi_c / t;
+		c.set_fenzi(fenzi_c);
+		c.set_fenmu(fenmu_c);
+		return c;
+	}
+	else
+	{
+		cout << "除数不能为0！" << endl;
+	}
 }
 
