@@ -4,10 +4,11 @@ using namespace std;
 
 void caculate(char* s,Rational &a, Rational &b)
 {
-	int i = 0, j = 0;									
+	int i = 0, j = 0;
+	Rational c;
 	while (s[i] != '\0')						//对输入的字符串处理
 	{
-		if (s[i] == '+' || s[i] == '-')			
+		if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/')
 		{
 			if (j == 0)							//当遇到运算符时，判断是否为第一个数，第一个数时j=0，将这个数赋给对象a
 			{
@@ -46,12 +47,16 @@ void caculate(char* s,Rational &a, Rational &b)
 				b.set(_m, _n);
 				if (s[j] == '+')
 				{
-					a.add(b);
+					a = a + b;
 				}
 				else if (s[j] == '-')
 				{
-					a.sub(b);
+					a = a - b;
 				}
+				/*else if (s[j] == '*')
+				{
+
+				}*/
 				j = i;
 			}
 		}
@@ -74,11 +79,11 @@ void caculate(char* s,Rational &a, Rational &b)
 	b.set(_m, _n);
 	if (s[j] == '+')
 	{
-		a.add(b);
+		a = a + b;
 	}
 	else if (s[j] == '-')
 	{
-		a.sub(b);
+		a = a - b;
 	}
 	a.seq();
 }

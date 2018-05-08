@@ -8,13 +8,12 @@ public:
 	Rational() {};
 	void set(int a, int b);
 	friend Rational operator+(Rational a, Rational b);
-	friend Rational operator+(Rational a, double b);
 	friend Rational operator-(Rational a, Rational b);
 	friend Rational operator*(Rational a, Rational b);
 	friend Rational operator/(Rational a, Rational b);
 	Rational operator=(Rational a);
-	friend Rational operator++(Rational &a);
-	friend Rational operator--(Rational &b);
+	Rational operator++(int);
+	Rational operator--(int);
 	friend bool operator==(Rational a,Rational b);
 	friend bool operator>(Rational a,Rational b);
 	friend bool operator<(Rational a, Rational b);
@@ -135,8 +134,6 @@ Rational operator+(Rational a, Rational b)
 	return c;
 }
 
-
-
 Rational operator-(Rational a, Rational b)
 {
 	Rational c;
@@ -185,48 +182,85 @@ Rational operator/(Rational a, Rational b)
 
 Rational Rational::operator=(Rational a)
 {
-	Rational b;
-	b.set_fenmu(a.get_fenmu());
-	b.set_fenzi(a.get_fenzi());
-	return b;
+	fenmu=a.get_fenmu();
+	fenzi=a.get_fenzi();
+	return *this;
 }
 
-Rational operator++(Rational &a)
+Rational Rational::operator++(int)
 {
-	a = a + 1.0;
+	Rational a;
+	a.set_fenzi(1);
+	a.set_fenmu(1);
+	return *this + a;
 }
 
-Rational operator--(Rational &a)
+Rational Rational::operator--(int)
 {
-
+	Rational a;
+	a.set_fenzi(1);
+	a.set_fenmu(1);
+	return *this - a;
 }
 
-bool operator==(const Rational &a)
+bool operator==(Rational a, Rational b)
 {
-
+	return a.get_fenmu() == b.get_fenmu() && a.get_fenzi() == b.get_fenzi();
 }
 
-bool operator>(const Rational &a)
+bool operator>(Rational a, Rational b)
 {
-
+	Rational c = a - b;
+	if (c.get_fenmu()*c.get_fenzi() <= 0)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
-bool operator<(const Rational &b)
+bool operator<(Rational a, Rational b)
 {
-
+	Rational c = a - b;
+	if (c.get_fenmu()*c.get_fenzi() >= 0)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
-bool operator!=(const Rational a)
+bool operator!=(Rational a, Rational b)
 {
-
+	return !(a.get_fenmu() == b.get_fenmu() && a.get_fenzi() == b.get_fenzi());
 }
 
-bool operator<=(const Rational a)
+bool operator<=(Rational a, Rational b)
 {
-
+	Rational c = a - b;
+	if (c.get_fenmu()*c.get_fenzi() > 0)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
-bool operator>=(const Rational a)
+bool operator>=(Rational a, Rational b)
 {
-
+	Rational c = a - b;
+	if (c.get_fenmu()*c.get_fenzi() < 0)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
