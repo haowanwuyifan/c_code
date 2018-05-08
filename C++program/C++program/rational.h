@@ -8,9 +8,19 @@ public:
 	Rational() {};
 	void set(int a, int b);
 	friend Rational operator+(Rational a, Rational b);
+	friend Rational operator+(Rational a, double b);
 	friend Rational operator-(Rational a, Rational b);
 	friend Rational operator*(Rational a, Rational b);
 	friend Rational operator/(Rational a, Rational b);
+	Rational operator=(Rational a);
+	friend Rational operator++(Rational &a);
+	friend Rational operator--(Rational &b);
+	friend bool operator==(Rational a,Rational b);
+	friend bool operator>(Rational a,Rational b);
+	friend bool operator<(Rational a, Rational b);
+	friend bool operator!=(Rational a, Rational b);
+	friend bool operator<=(Rational a, Rational b);
+	friend bool operator>=(Rational a, Rational b);
 	int get_fenzi();
 	int get_fenmu();
 	void set_fenzi(int);
@@ -125,6 +135,8 @@ Rational operator+(Rational a, Rational b)
 	return c;
 }
 
+
+
 Rational operator-(Rational a, Rational b)
 {
 	Rational c;
@@ -171,3 +183,50 @@ Rational operator/(Rational a, Rational b)
 	}
 }
 
+Rational Rational::operator=(Rational a)
+{
+	Rational b;
+	b.set_fenmu(a.get_fenmu());
+	b.set_fenzi(a.get_fenzi());
+	return b;
+}
+
+Rational operator++(Rational &a)
+{
+	a = a + 1.0;
+}
+
+Rational operator--(Rational &a)
+{
+
+}
+
+bool operator==(const Rational &a)
+{
+
+}
+
+bool operator>(const Rational &a)
+{
+
+}
+
+bool operator<(const Rational &b)
+{
+
+}
+
+bool operator!=(const Rational a)
+{
+
+}
+
+bool operator<=(const Rational a)
+{
+
+}
+
+bool operator>=(const Rational a)
+{
+
+}
