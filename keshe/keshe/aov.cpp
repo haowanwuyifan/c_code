@@ -1,5 +1,6 @@
 #include<iostream>
 #include<stdlib.h>
+#include<fstream>
 #include<string>
 #include<vector>
 using namespace std;
@@ -14,6 +15,7 @@ public:
 	void pop();
 	int getst();
 	void clear();
+	int getssize();
 private:
 	int stsize;
 	int* stac;
@@ -65,29 +67,37 @@ void stack::clear()
 	stsize = -1;
 }
 
+int stack::getssize()
+{
+	return stsize;
+}
+
 class schedule
 {
 public:
-	schedule(int size);
+	schedule(int size, vector <string> &a);
 	void calin();
-	void setin();
+	bool setin();
 	void getpath(vector <pair<string, string>> &a, vector <string> &b);
-	void display(vector <string> &b);
-	bool getin();
+	void display(int);
 private:
 	int** path;
 	int _size;
 	int* point;
 	int* inde;
 	int order;
+	vector <string> b;
 	stack st;
 };
 
-schedule::schedule(int size)
+schedule::schedule(int size, vector <string> &a)
 {
 	_size = size;
 	order = 0;
-
+	for (int i = 0; i < a.size(); i++)
+	{
+		b.push_back(a.at(i));
+	}
 }
 
 void schedule::getpath(vector <pair<string, string>> &a, vector <string> &b)
@@ -149,8 +159,9 @@ void schedule::calin()
 	}
 }
 
-void schedule::setin()
+  bool schedule::setin()
 {
+	inde = new int[_size];
 	st.createstack(_size);
 	if (st.empty())
 	{
@@ -161,59 +172,38 @@ void schedule::setin()
 				if (point[i] == 0)
 				{
 					st.push(i);
+					point[i] = -1;
+				}
+			}
+			int s = st.getssize();
+			if (s != -1)
+			{
+				while (!st.empty())
+				{
+					inde[order++] = st.getst();
 					for (int j = 0; j < _size; j++)
 					{
-						if (path[i][j] == 1)
+						if (path[(inde[order - 1])][j] == 1)
 						{
 							point[j]--;
 						}
 					}
-					point[i] = -1;
+					st.pop();
 				}
-			}
-		}
-	}
-	else
-	{
-		st.clear();
-		for (int i = 0; i < _size; i++)
-		{
-			for (int j = 0; j < _size; j++)
-			{
-				for (int i = 0; i < _size; i++)
+				if (st.empty())
 				{
-					if (point[i] == 0)
-					{
-						st.push(i);
-						for (int j = 0; j < _size; j++)
-						{
-							if (path[i][j] == 1)
-							{
-								point[j]--;
-							}
-						}
-						point[i] = -1;
-					}
+					cout << "第" << j + 1 << "学期：";
+					display(s);
 				}
 			}
 		}
-	}
-}
-
-bool schedule::getin()
-{
-	inde = new int[_size];
-	while (!st.empty())
-	{
-		inde[order++] = st.getst();
-		st.pop();
 	}
 	return order == _size && order != 0 && _size != 0;
 }
 
-void schedule::display(vector <string> &b)
+void schedule::display(int s)
 {
-	for (int j = order - 1; j >= 0; j--)
+	for (int j = order-1; j >=order-s-1; j--)
 	{
 		
 		cout <<b.at(inde[j]) << " ";
@@ -228,23 +218,25 @@ int main()
 	vector <string> b;
 	string m;
 	string n;
-	while (1)
+	ifstream out;
+	out.open("t.txt");
+	if (out.fail())
 	{
-		cout << "请输入节点间关系：" << endl;
-		cin >> m;
-		if (m == "over")
-		{
-			break;
-		}
+		cout << "Error opening file"; 
+		exit(1);
+	}
+	while (!out.eof())
+	{
+		out >> m;
 		if (b.empty())
 		{
 			b.push_back(m);
 		}
-		cin >> n;
-		if (m!=n&&m.length()==4&&n.length()==4)
+		out >> n;
+		if (m != n && m.length() == 4 && n.length() == 4)
 		{
 			b.push_back(m);
-			for (int i = 0; i < b.size()-1; i++)
+			for (int i = 0; i < b.size() - 1; i++)
 			{
 				if (b.at(i) == m)
 				{
@@ -272,18 +264,25 @@ int main()
 			continue;
 		}
 	}
-	schedule sc(b.size());
+	out.close();
+	cout << "文件中的课程有：";
+	for (int i = 0; i < b.size(); i++)
+	{
+		cout << b.at(i) << " ";
+	}
+	cout << endl;
+	schedule sc(b.size(),b);
 	sc.getpath(a,b);
 	sc.calin();
-	sc.setin();
-	if (sc.getin())
+	//sc.setin();
+	if (sc.setin())
 	{
-		sc.display(b);
+		//sc.display(b);
 		cout << "没有环路" << endl;
 	}
 	else
 	{
-		sc.display(b);
+		//sc.display(b);
 		cout << "有环路" << endl;
 	}
 	system("pause");
