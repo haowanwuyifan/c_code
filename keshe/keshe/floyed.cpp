@@ -12,6 +12,7 @@ public:
 	void getpath(vector <pair<string, string>> &a, vector <string> &b,vector <int> &c);
 	void setpath();
 	void display(vector <string> &b);
+	void sequence();
 private:
 	int** path;
 	int** swit;
@@ -143,6 +144,33 @@ void hosnet::display(vector <string> &b)
 				}
 			}
 		}
+	}
+}
+
+void hosnet::sequence()
+{
+	int* a = new int[_size];
+	for (int i = 0; i < _size; i++)
+	{
+		int ad = 0;
+		for (int j = 0; j < _size; j++)
+		{
+			if (path[i][j] == 0)
+			{
+				ad = HUGE + 99;
+				break;
+			}
+			else if (path[i][j] != HUGE)
+			{
+				ad += path[i][j];
+			}
+		}
+		a[i] = ad;
+	}
+	int t = a[0];
+	for (int i = 0; i < _size; i++)
+	{
+		if(a[i]<t)
 	}
 }
 
