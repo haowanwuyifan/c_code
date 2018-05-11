@@ -11,16 +11,18 @@ public:
 	int size();
 	String substr(int be,int en=-1);
 	void insert(int i,const String &b);
-	String erase();
-	String append();
+	String erase(int be,int len);
+	String append(const String &a);
 	String replace();
 	String find();
+	bool constains();
 	char at(int);
+	friend int length(const String &a);
 	friend String operator+(String a, String b);
 	friend bool operator==(String a, String b);
-	friend ofstream& operator<<(ofstream &out, String a);
-	friend ofstream& operator>>(ofstream &in, String &a);
-	String operator=(String a);
+	friend ostream& operator<<(ostream &out, String a);
+	friend istream& operator>>(istream &in, String &a);
+	String operator=(const String &a);
 private:
 	char* string;
 	int _size;
@@ -135,14 +137,81 @@ void String::insert(int i, const String &b)
 	}
 }
 
+String String::erase(int be,int len)
+{
+	
+	char* s1 = new char[be];
+	char* s2 = new char[_size + 1 - len];
+	for (int i = 0; i < _size; i++)
+	{
+		if (i < be)
+		{
+			s1[i] = string[i];
+		}
+		else if (i >= be + len)
+		{
+			s2[i - be - len] = string[i];
+		}
+	}
+	delete[]string;
+	_size = _size - len;
+	string = new char[_size + 1];
+	for (int i = 0; i < _size; i++)
+	{
+		if (i < be)
+		{
+			string[i] = s1[i];
+		}
+		else
+		{
+			string[i] = s2[i - be - len];
+		}
+	}
+}
 
+String String::append(const String &a)
+{
+	int size = _size + a._size + 1;
+	char* s = new char[size];
+	for (int i = 0; i < size; i++)
+	{
+		if (i < _size)
+		{
+			s[i] = string[i];
+		}
+		else
+		{
+			s[i] = a.string[i - _size];
+		}
+	}
+	_size = size;
+	delete[] string;
+	string = new char[size + 1];
+	for (int i = 0; i < size; i++)
+	{
+		string[i] = s[i];
+	}
+}
 
+String String::replace()
+{
 
+}
 
+String String::find()
+{
 
+}
 
+bool String::constains()
+{
 
+}
 
+int length(const String &a)
+{
+	return a._size;
+}
 
 String operator+(String a, String b)
 {
@@ -182,19 +251,32 @@ bool operator==(String a, String b)
 	}
 }
 
-ofstream& operator<<(ofstream& out, String a)
+ostream& operator<<(ostream& out, String a)
 {
 	out << a.string;
+	return out;
 }
 
-ofstream& operator>>(ofstream& out, String a)
+istream& operator>>(istream& in, String &a)
 {
-
+	a.string = new char[1024];
+	in >> a.string;
+	return in;
 }
 
+String String::operator=(const String &a)
+{
+	_size = a._size;
+	string = new char[_size];
+	for (int i = 0; i < _size; i++)
+	{
+		string[i] = a.string[i];
+	}
+	return *this;
+}
 
 
 int main()
 {
-
+	
 }
