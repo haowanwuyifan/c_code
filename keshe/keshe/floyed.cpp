@@ -2,24 +2,26 @@
 #include<stdlib.h>
 #include<string>
 #include<vector>
+#include<fstream>
 #define HUGE 9999
 using namespace std;
 
 class hosnet
 {
 public:
-	hosnet(int size);
-	void getpath(vector <pair<string, string>> &a, vector <string> &b,vector <int> &c);
+	hosnet(int size,vector <string> &a);
+	void getpath(vector <pair<string, string>> &a,vector <int> &c);
 	void setpath();
-	void display(vector <string> &b);
+	void display();
 	void sequence();
 private:
 	int** path;
 	int** swit;
+	vector <string> b;
 	int _size;
 };
 
-hosnet::hosnet(int size)
+hosnet::hosnet(int size,vector <string> &a)
 {
 	_size = size;
 	for (int i = 0; i < _size; i++)
@@ -59,9 +61,13 @@ hosnet::hosnet(int size)
 			swit[i][j] = -1;
 		}
 	}
+	for (int i = 0; i < a.size(); i++)
+	{
+		b.push_back(a.at(i));
+	}
 }
 
-void hosnet::getpath(vector <pair<string, string>> &a, vector <string> &b, vector <int> &c)
+void hosnet::getpath(vector <pair<string, string>> &a, vector <int> &c)
 {
 	for (int i = 0; i < a.size(); i++)
 	{
@@ -110,7 +116,7 @@ void hosnet::setpath()
 	}
 }
 
-void hosnet::display(vector <string> &b)
+void hosnet::display()
 {
 	vector <int> c;
 	for (int i = 0; i < _size; i++)
@@ -165,12 +171,33 @@ void hosnet::sequence()
 				ad += path[i][j];
 			}
 		}
-		a[i] = ad;
+		if (ad > HUGE)
+		{
+			ad = -1;
+		}
+		else
+		{
+			a[i] = ad;
+		}
 	}
-	int t = a[0];
+	int t = a[0] > 0 ? a[0] : HUGE;
+	int j = 0;
 	for (int i = 0; i < _size; i++)
 	{
-		if(a[i]<t)
+		if (a[i] < t && a[i] > 0)
+		{
+			t = a[i];
+			j = i;
+		}
+	}
+	if (t > 0 && t < HUGE)
+	{
+		cout << "选择的社区为：" << b.at(j) << endl;
+		cout << "最短的距离和为：" << t << endl;
+	}
+	else
+	{
+		cout << "社区不连通，无法选址！" << endl;
 	}
 }
 
@@ -182,20 +209,21 @@ int main()
 	string m;
 	string n;
 	int l;
-	while (1)
+	fstream file("y.txt");
+	if (file.fail())
 	{
-		cout << "请输入路径的起始终止点以及路径长度：" << endl;
-		cin >> m;
-		if (m == "over")
-		{
-			break;
-		}
+		cout << "failed!" << endl;
+		exit(1);
+	}
+	while (!file.eof())
+	{
+		file >> m;
 		if (b.empty())
 		{
 			b.push_back(m);
 		}
-		cin >> n;
-		cin >> l;
+		file >> n;
+		file >> l;
 		if (m != n && m.length() == 4 && n.length() == 4 && l > 0)
 		{
 			b.push_back(m);
@@ -228,10 +256,17 @@ int main()
 			continue;
 		}
 	}
-	hosnet hs(b.size());
-	hs.getpath(a, b, c);
+	cout << "文件中的社区有：";
+	for (int i = 0; i < b.size(); i++)
+	{
+		cout << b.at(i) << " ";
+	}
+	cout << endl;
+	hosnet hs(b.size(), b);
+	hs.getpath(a, c);
 	hs.setpath();
-	hs.display(b);
+	hs.display();
+	hs.sequence();
 	system("pause");
 	return 0;
 }
