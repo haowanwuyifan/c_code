@@ -9,20 +9,20 @@ public:
 	String(const String &a);
 	int strcmp(const String &b);
 	int size();
-	String substr(int be,int en=-1);
+	String& substr(int be,int en);
 	void insert(int i,const String &b);
-	String erase(int be,int len);
-	String append(const String &a);
-	String replace();
-	String find();
-	bool constains();
+	String& erase(int be,int len);
+	String& append(const String &a);
+	String& replace(String& a,int be,int en);
+	int find(char a);
+	//bool constains();
 	char at(int);
 	friend int length(const String &a);
-	friend String operator+(String a, String b);
+	friend String& operator+(String a, String b);
 	friend bool operator==(String a, String b);
 	friend ostream& operator<<(ostream &out, String a);
 	friend istream& operator>>(istream &in, String &a);
-	String operator=(const String &a);
+	String& operator=(const String &a);
 private:
 	char* string;
 	int _size;
@@ -76,20 +76,20 @@ char String::at(int i)
 	}
 }
 
-String String::substr(int be, int en = -1)
+String& String::substr(int be, int en = -1)
 {
 	if (en == -1)
 	{
 		en = _size;
 	}
 	int size = en - be;
-	char* s = new char[size + 1];
+	char* s = new char[size];
 	for (int i = 0; i < size; i++)
 	{
-		s[i] = string[en + i];
+		s[i] = string[be + i];
 	}
-	String a(s);
-	return a;
+	String *c = new String(s);
+	return *c;
 }
 
 int String::strcmp(const String &b)
@@ -118,13 +118,13 @@ void String::insert(int i, const String &b)
 		{
 			a[_i] = string[_i];
 		}
-		else if(_i<i+b.size)
+		else if(_i<i+b._size)
 		{
 			a[_i] = b.string[_i - i];
 		}
 		else
 		{
-			a[_i] = string[_i-i-b.size];
+			a[_i] = string[_i-i-b._size];
 			i++;
 		}
 	}
@@ -137,7 +137,7 @@ void String::insert(int i, const String &b)
 	}
 }
 
-String String::erase(int be,int len)
+String& String::erase(int be,int len)
 {
 	
 	char* s1 = new char[be];
@@ -167,9 +167,10 @@ String String::erase(int be,int len)
 			string[i] = s2[i - be - len];
 		}
 	}
+	return *this;
 }
 
-String String::append(const String &a)
+String& String::append(const String &a)
 {
 	int size = _size + a._size + 1;
 	char* s = new char[size];
@@ -191,29 +192,60 @@ String String::append(const String &a)
 	{
 		string[i] = s[i];
 	}
+	return *this;
 }
 
-String String::replace()
+String& String::replace(String& a,int be,int en=-1)
 {
-
+	int nsize = _size + a._size;
+	if (be == -1)
+	{
+		be = _size;
+	}
+	char* c = new char[nsize + 1];
+	for (int i = 0; i < nsize; i++)
+	{
+		if (i < be)
+		{
+			c[i] = string[i];
+		}
+		else if(i>=be&&i<be+a._size)
+		{
+			c[i] = a.at(i - be);
+		}
+		else if (i >= be + a._size&&i < _size + a._size)
+		{
+			c[i] = string[i - be - a._size + en];
+		}
+	}
+	String *s = new String(c);
+	return *s;
 }
 
-String String::find()
+int String::find(char a)
 {
-
+	for (int i = 0; i < _size; i++)
+	{
+		if (string[i] == a)
+		{
+			return i;
+		}
+	}
+	cout << "不存在该值！" << endl;
+	return NULL;
 }
 
-bool String::constains()
-{
-
-}
+//bool String::constains()
+//{
+//
+//}
 
 int length(const String &a)
 {
 	return a._size;
 }
 
-String operator+(String a, String b)
+String& operator+(String a, String b)
 {
 	int size = a.size() + b.size() - 1;
 	char* s = new char[size];
@@ -228,15 +260,15 @@ String operator+(String a, String b)
 			s[i] = b.at(i - a.size());
 		}
 	}
-	String c(s);
-	return c;
+	String *c = new String(s);
+	return *c;
 }
 
 bool operator==(String a, String b)
 {
 	if (a.size() != b.size())
 	{
-		return -1;
+		return false;
 	}
 	else
 	{
@@ -244,10 +276,10 @@ bool operator==(String a, String b)
 		{
 			if (a.at(i) != b.at(i))
 			{
-				return -1;
+				return false;
 			}
 		}
-		return 1;
+		return true;
 	}
 }
 
@@ -261,11 +293,18 @@ istream& operator>>(istream& in, String &a)
 {
 	a.string = new char[1024];
 	in >> a.string;
+	int i = 0;
+	while (a.string[i] != '\0')
+	{
+		i++;
+	}
+	a._size = i;
 	return in;
 }
 
-String String::operator=(const String &a)
+String& String::operator=(const String &a)
 {
+	delete[] string;
 	_size = a._size;
 	string = new char[_size];
 	for (int i = 0; i < _size; i++)
@@ -276,7 +315,175 @@ String String::operator=(const String &a)
 }
 
 
+
+int k = 1;
+
+
+void get_name(String& a, String& b, int n)//获取文件名
+{
+	int t = 0;
+	for (int i = 0; i < n; i++)//取最后一个\或/之后的部分为文件名
+	{
+		if (a.at(i) == '\0')
+		{
+			break;
+		}
+		if (a.at(i) == '\\' || a.at(i) == '/')
+		{
+			t = i;
+		}
+	}
+	b = a.substr(t);
+}
+
+void get_index(String& a, String& b, int n)//获取文件目录
+{
+	int t = 0;
+	for (int i = 0; i < n; i++)//取最后一个\或/之前的为文件目录
+	{
+		if (a.at(i) == '\0')
+		{
+			break;
+		}
+		if (a.at(i) == '\\' || a.at(i) == '/')
+		{
+			t = i;
+		}
+	}
+	b = a.substr(0,t);
+}
+
+void replace(String& a, String& b)//替换文件路径
+{
+	int length_a = a.size();
+	int length_b = b.size();
+	if (b.at(length_b) != '\\' || b.at(length_b) != '/')//如果不是以\或/结尾的要加上
+	{
+		char* s = new char('/');
+		String c(s);
+		b.append(c);
+	}
+	int t = 0;
+	for (int i = 0; i < a.size(); i++)//取最后一个\或/之前的为文件目录
+	{
+		if (a.at(i) == '\0')
+		{
+			break;
+		}
+		if (a.at(i) == '\\' || a.at(i) == '/')
+		{
+			t = i;
+		}
+	}
+	a.replace(b, 0, t);
+}
+
+void merge(String& a, String& b)//合并文件目录和路径
+{
+	int length_a = a.size();
+	int length_b = b.size();
+	if (a.at(length_a) != '\\' || a.at(length_a) != '/')//如果不是以\或/结尾的要加上
+	{
+		char* s = new char('/');
+		String c(s);
+		a.append(c);
+	}
+	else
+	{
+		a = a + b;
+	}
+
+}
+
+
+
+
+void menu(String& a)
+{
+	cout << "*************************************" << endl;
+	cout << "**1.获取路径长度*******2.获取文件名**" << endl;
+	cout << "**3.获取文件所在目录*4.替换文件目录**" << endl;
+	cout << "**5.连接文件名和目录****6，退出程序**" << endl;
+	cout << "*************************************" << endl;
+	int option;
+	cout << "请输入选项：";
+	cin >> option;
+	switch (option)
+	{
+	case 1:
+	{
+		
+		cout << "路径的长度为：" << a.size() << endl;
+		break;
+	}
+	case 2:
+	{
+		int length = a.size();
+		String name;
+		get_name(a, name, length);
+		cout << "文件名为：";
+		int i = 0;
+		cout << name;
+		cout << endl;
+		break;
+	}
+	case 3:
+	{
+		int length = a.size();
+		String name;
+		get_index(a, name, length);
+		cout << "文件目录为：";
+		cout << name;
+		break;
+	}
+	case 4:
+	{
+		String index;
+		cout << "请输入新的文件目录：";
+		cin >> index;
+		replace(a, index);
+		cout << "替换后的文件路径为：";
+		cout << a;
+		cout << endl;
+		break;
+	}
+	case 5:
+	{
+		String index;
+		String name;
+		cout << "请输入文件目录：";
+		cin >> index;
+		cout << "请输入文件名：";
+		cin >> name;
+		merge(index, name);
+		cout << "连接后的文件路径为：";
+		cout << index;
+		cout << endl;
+		break;
+	}
+	case 6:
+	{
+		k = 0;
+		break;
+	}
+	default:
+		cout << "请重新输入！" << endl;
+		break;
+	}
+}
+
 int main()
 {
-	
+	cout << "请输入文件目录：";
+	String a;
+	cin >> a;
+	while (k)
+	{
+		menu(a);
+	}
+	return 0;
 }
+//int main()
+//{
+//	
+//}

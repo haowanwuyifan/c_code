@@ -78,7 +78,7 @@ public:
 	schedule(int size, vector <string> &a);
 	void calin();
 	bool setin();
-	void getpath(vector <pair<string, string>> &a, vector <string> &b);
+	void getpath(vector <pair<string, string>> &a);
 	void display(int);
 private:
 	int** path;
@@ -100,7 +100,7 @@ schedule::schedule(int size, vector <string> &a)
 	}
 }
 
-void schedule::getpath(vector <pair<string, string>> &a, vector <string> &b)
+void schedule::getpath(vector <pair<string, string>> &a)
 {
 	for (int i = 0; i < _size; i++)
 	{
@@ -272,7 +272,7 @@ int main()
 	}
 	cout << endl;
 	schedule sc(b.size(),b);
-	sc.getpath(a,b);
+	sc.getpath(a);
 	sc.calin();
 	//sc.setin();
 	if (sc.setin())
