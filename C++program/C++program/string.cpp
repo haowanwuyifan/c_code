@@ -1,4 +1,5 @@
 #include<iostream>
+#include<stdlib.h>
 using namespace std;
 
 class String
@@ -37,10 +38,12 @@ String::String(char* a)
 	}
 	_size = i;
 	string = new char[i + 1];
-	for (int j = 0; j < i; j++)
+	int j = 0;
+	for (; j < i; j++)
 	{
 		string[j] = a[j];
 	}
+	string[j] = '\0';
 }
 
 String::String(const String &a)
@@ -49,11 +52,13 @@ String::String(const String &a)
 	_size = a._size;
 	if (_size > 0)
 	{
-		string = new char[_size];
-		for (int i = 0; i < _size; i++)
+		int i = 0;
+		string = new char[_size+1];
+		for (; i < _size; i++)
 		{
 			string[i] = a.string[i];
 		}
+		string[i] = '\0';
 	}
 	
 }
@@ -477,10 +482,12 @@ int main()
 	cout << "请输入文件目录：";
 	String a;
 	cin >> a;
-	while (k)
+	cout << a;
+	/*while (k)
 	{
 		menu(a);
-	}
+	}*/
+	system("pause");
 	return 0;
 }
 //int main()
